@@ -26,55 +26,54 @@ const float quant_matrix[64] = float[64](
 
 void main()
 {
-  // vec2 grid = fract( vUv * (u_resolution / 8.0));
-  // NEW UV's for 8x8 Blocks
   vec2 block_size = 8.0 / u_resolution;
   vec2 block_uv = block_size * floor(vUv / block_size);
 
   vec2 real_pixel_size = 1.0 / u_resolution;
   vec2 local_uv = floor((vUv - block_uv) / real_pixel_size);
 
-  // Sums
   float sum_Y = 0.0;
   float sum_Cb = 0.0;
   float sum_Cr = 0.0;
-  for (float x = 0.0; x < 8.0; ++x)
+
+  for (float u = 0.0; u < 8.0; ++u)
   {
-    for (float y = 0.0; y < 8.0; ++y)
+    for (float v = 0.0; v < 8.0; ++v)
     {
-      vec2 target_uv = block_uv + (vec2(x,y) + 0.5) * real_pixel_size;
+      vec2 target_uv = block_uv + (vec2(u,v) + 0.5) * real_pixel_size;
       vec4 pixel_colour = texture(tDiffuse, target_uv);
 
-      float luminance = dot(pixel_colour.rgb, luma_weights) - 0.5;
-      float Cb = dot(pixel_colour.rgb, Cb_weights);
-      float Cr = dot(pixel_colour.rgb, Cr_weights);
+      float q_Y = texture(tDiffuse, target_uv).x;
+      float q_Cb = texture(tDiffuse, target_uv).y;
+      float q_Cr = texture(tDiffuse, target_uv).z;
+      vec3 q = vec3(q_Y, q_Cb, q_Cr);
 
-      float cos_x = cos((((2.0*x)+1.0) * pi * local_uv.x) / 16.0);
-      float cos_y = cos((((2.0*y)+1.0) * pi * local_uv.y) / 16.0);
+      int index = (int(v) * 8) + int(u);
+      float q_value = ( 20.0 * quant_matrix[index]) / 255.0;
 
-      sum_Y += (luminance * cos_x * cos_y);
-      sum_Cb += (Cb * cos_x * cos_y);
-      sum_Cr += (Cr * cos_x * cos_y);
+      float o_Y = q_Y * q_value; 
+      float o_Cb = q_Cb * q_value; 
+      float o_Cr = q_Cr * q_value; 
+
+      float Cu = (u == 0.0) ? 0.7071 : 1.0;
+      float Cv = (v == 0.0) ? 0.7071 : 1.0;
+
+      float cos_x = cos((((2.0*local_uv.x)+1.0) * pi * u) / 16.0);
+      float cos_y = cos((((2.0*local_uv.y)+1.0) * pi * v) / 16.0);
+
+      sum_Y += Cu * Cv * o_Y * cos_x * cos_y;
+      sum_Cb += Cu * Cv * o_Cb * cos_x * cos_y;
+      sum_Cr += Cu * Cv * o_Cr * cos_x * cos_y;
     }
   }
-  
-  float Cu = (local_uv.x == 0.0) ? 0.7071 : 1.0;
-  float Cv = (local_uv.y == 0.0) ? 0.7071 : 1.0;
 
-  float DCT_Y = (0.25 * sum_Y * Cu * Cv);
-  float DCT_Cb = 0.25 * sum_Cb * Cu * Cv;
-  float DCT_Cr = 0.25 * sum_Cr * Cu * Cv;
+  float fi_Y = (0.25 * sum_Y) + 0.5;
+  float fi_Cb = (0.25 * sum_Cb);
+  float fi_Cr = (0.25 * sum_Cr);
 
-  // Qunatize
-  int index = (int(local_uv.y) * 8) + int(local_uv.x);
-  float q_value = ( 20.0 * quant_matrix[index]) / 255.0;
-  float q_Y = round(DCT_Y / q_value);
-  float q_Cb = round(DCT_Cb / q_value);
-  float q_Cr = round(DCT_Cr / q_value);
+  vec3 close = vec3(fi_Y, fi_Cb, fi_Cr);
+  vec3 final = ycbcr_to_rgb * close;
 
-  vec3 YCbCr = vec3(q_Y, q_Cb, q_Cr);
-  vec3 rgb = ycbcr_to_rgb * YCbCr;
-
-  // vec4 diffuse = texture2D(tDiffuse, block_uv);
-  gl_FragColor = vec4(YCbCr, 1.0);
+  // vec4 diffuse = texture2D(tDiffuse, vUv);
+  gl_FragColor = vec4(final, 1.0);
 }

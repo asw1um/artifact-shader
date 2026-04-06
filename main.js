@@ -15,6 +15,7 @@ const cube_texture_loader = new THREE.CubeTextureLoader();
 */
 const vert_shader = await file_loader.loadAsync( './vert_shader.glsl' );
 const frag_shader = await file_loader.loadAsync( './frag_shader.glsl' );
+const idct_frag_shader = await file_loader.loadAsync( './idct_frag_shader.glsl' );
 
 const jpeg_shader = 
 {
@@ -27,9 +28,19 @@ const jpeg_shader =
   fragmentShader: frag_shader,
 };
 
-console.log(frag_shader);
+const idct_shader = 
+{
+  uniforms: 
+  {
+    tDiffuse: { value: null },
+    u_resolution : {value : new THREE.Vector2(window.innerWidth, window.innerHeight)}
+  },
+  vertexShader: vert_shader,
+  fragmentShader: idct_frag_shader,
+};
 
 const jpeg_pass = new ShaderPass(jpeg_shader);
+const idct_pass = new ShaderPass(idct_shader);
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl');
@@ -76,7 +87,7 @@ const render_target_parameters = {
     minFilter: THREE.NearestFilter,
     magFilter: THREE.NearestFilter,
     format: THREE.RGBAFormat,
-    type: THREE.FloatType
+    type: THREE.HalfFloatType
 };
 // 2. Create the custom Render Target
 const custom_render_target = new THREE.WebGLRenderTarget(
@@ -87,7 +98,7 @@ const custom_render_target = new THREE.WebGLRenderTarget(
 const composer = new EffectComposer(renderer, custom_render_target);
 composer.addPass(new RenderPass(scene, camera));
 composer.addPass(jpeg_pass);
-jpeg_pass.enabled = true;
+composer.addPass(idct_pass);
 
 /**
  * Lights
