@@ -1,7 +1,8 @@
 # artifact-shader
 
 # TODO
--   [ ] Vectorize certain operations in fragment shader
--   [ ] Separate Forward DCT, Quantization, and Inverse DCT into respective functions
--   [ ] Rename shaders for FDCT and IDCT respectively
--   [ ] Alter resize function
+-   [x] Vectorize certain operations in fragment shader
+-   [x] Rename shaders for FDCT and IDCT respectively
+-   [x] Alter resize function
+-   [ ] Find optimal compression factor
+-   [ ] Implement downsampled image for DCT then upscale to fit screen
