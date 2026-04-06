@@ -13,16 +13,11 @@ const mat3 ycbcr_to_rgb = mat3(
 const vec3 luma_weights = vec3(0.2126, 0.7152, 0.0722);
 const vec3 Cb_weights   = vec3(-0.1146, -0.3854, 0.5000);
 const vec3 Cr_weights   = vec3(0.5000, -0.4542, -0.0458);
-const float quant_matrix[64] = float[64](
-                3.0,  5.0,  7.0,  9.0, 11.0, 13.0, 15.0, 17.0,
-                5.0,  7.0,  9.0, 11.0, 13.0, 15.0, 17.0, 19.0,
-                7.0,  9.0, 11.0, 13.0, 15.0, 17.0, 19.0, 21.0,
-                9.0, 11.0, 13.0, 15.0, 17.0, 19.0, 21.0, 23.0,
-                11.0, 13.0, 15.0, 17.0, 19.0, 21.0, 23.0, 25.0,
-                13.0, 15.0, 17.0, 19.0, 21.0, 23.0, 25.0, 27.0,
-                15.0, 17.0, 19.0, 21.0, 23.0, 25.0, 27.0, 29.0,
-                17.0, 19.0, 21.0, 23.0, 25.0, 27.0, 29.0, 31.0
-                );
+
+float get_quant(int col, int row)
+{
+        return 3.0 + float(col + row) * 2.0;
+}
 
 void main()
 {
@@ -54,8 +49,8 @@ void main()
         vec3 DCT = (sums *= (0.25 * C.x * C.y));
 
         // Qunatize
-        int index = (int(local_uv.y) * 8) + int(local_uv.x);
-        float q_value = ( 20.0 * quant_matrix[index]) / 255.0;
+        // int index = (int(local_uv.y) * 8) + int(local_uv.x);
+        float q_value = ( 20.0 * get_quant(int(local_uv.x), int(local_uv.y))) / 255.0;
 
         vec3 quantized_channels = vec3(round(DCT.x / q_value) , round(DCT.y / q_value), round(DCT.z / q_value)); 
 
