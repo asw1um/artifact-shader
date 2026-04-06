@@ -72,7 +72,19 @@ const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 
 // Composer
-const composer = new EffectComposer(renderer);
+const render_target_parameters = {
+    minFilter: THREE.NearestFilter,
+    magFilter: THREE.NearestFilter,
+    format: THREE.RGBAFormat,
+    type: THREE.FloatType
+};
+// 2. Create the custom Render Target
+const custom_render_target = new THREE.WebGLRenderTarget(
+    window.innerWidth, 
+    window.innerHeight, 
+    render_target_parameters
+);
+const composer = new EffectComposer(renderer, custom_render_target);
 composer.addPass(new RenderPass(scene, camera));
 composer.addPass(jpeg_pass);
 jpeg_pass.enabled = true;
