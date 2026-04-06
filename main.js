@@ -21,10 +21,13 @@ const jpeg_shader =
   uniforms: 
   {
     tDiffuse: { value: null },
+    u_resolution : {value : new THREE.Vector2(window.innerWidth, window.innerHeight)}
   },
   vertexShader: vert_shader,
   fragmentShader: frag_shader,
 };
+
+console.log(frag_shader);
 
 const jpeg_pass = new ShaderPass(jpeg_shader);
 
@@ -58,7 +61,10 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 // Camera
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+// const camera = new THREE.OrthographicCamera();
 camera.position.z = 400;
+// camera.zoom = 0.002122426378698158;
+// camera.far = 5000;
 scene.add(camera);
 
 // Controls
@@ -69,6 +75,7 @@ controls.enableDamping = true;
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 composer.addPass(jpeg_pass);
+jpeg_pass.enabled = true;
 
 /**
  * Lights
@@ -125,7 +132,7 @@ const tick = () =>
     controls.update();
 
     // Render
-    renderer.render(scene, camera);
+    composer.render(scene, camera);
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick);
