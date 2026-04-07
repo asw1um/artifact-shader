@@ -9,5 +9,6 @@
 -   [ ] Switch from Rec.709 to Rec.601 colour encoding standard
 -   [x] Investigate fastest solution for storing quantization matrix
 -   [ ] Separate DCT and IDCT into horizontal and vertical components to cut computation time
+    -   [ ] Colour Space Convrsion may be a core issue
 -   [ ] Consider using Taylor Series approximations for sin and cos to maybe speed up computation
 -   [ ] Fix Improper Rendering on MacOS perhaps due to pixelRatio errors in main.js

@@ -19,6 +19,16 @@ float get_quant(int col, int row)
         return 3.0 + float(col + row) * 2.0;
 }
 
+vec3 YCbCr2rgb(vec3 ycbcr) {
+    float cb = ycbcr.y - .5;
+    float cr = ycbcr.z - .5;
+    float y = ycbcr.x;
+    float r = 1.402 * cr;
+    float g = -.344 * cb - .714 * cr;
+    float b = 1.772 * cb;
+    return vec3(r, g, b) + y;
+}
+
 void main()
 {
         vec2 pixel_coord = floor(gl_FragCoord.xy);
@@ -26,7 +36,7 @@ void main()
         vec2 local_uv = pixel_coord - block_base_pixel;
 
         vec3 sums = vec3(0.0);
-        for (float v = 0.0; v < 8.0; ++u)
+        for (float v = 0.0; v < 8.0; ++v)
         {
                 float target_pixel = block_base_pixel.y + v;
                 vec2 target_uv = vec2((block_base_pixel.x + local_uv.x + 0.5) / u_resolution.x, (target_pixel + 0.5) / u_resolution.y);
@@ -34,7 +44,7 @@ void main()
 
                 float Cy = (v == 0.0) ? 0.7071 : 1.0;
                 float cos_y = cos((((2.0*local_uv.y)+1.0) * pi * v) / 16.0);
-                sums += (cos_y * Cy) * pixel_colour;
+                sums += (cos_y * Cy) * pixel_colour.xyz;
 
         }
         vec3 fi = 0.50 * sums;

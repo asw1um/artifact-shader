@@ -29,19 +29,19 @@ void main()
         for (float u = 0.0; u < 8.0; ++u)
         {
                 float target_pixel = block_base_pixel.x + u;
-                vec2 target_uv = vec2(target_pixel / u_resolution.x, (block_base_pixel.y + local_uv.y + 0.5) / u_resolution.y);
+                vec2 target_uv = vec2((target_pixel + 0.5)/ u_resolution.x, (block_base_pixel.y + local_uv.y + 0.5) / u_resolution.y);
 
                 vec4 pixel_colour = texture(tDiffuse, target_uv);
                 vec3 quantized_pixel = pixel_colour.xyz;
-                float q_value = (20.0 * get_quant(int(u), int(pixel_coord.y))) / 255.0;
+                float q_value = (10.0 * get_quant(int(u), int(local_uv.y))) / 255.0;
 
-                quantized_pixel += q_value;
+                quantized_pixel *= q_value;
                 float Cu = (u == 0.0) ? 0.7071 : 1.0;
                 float cos_x = cos((((2.0*local_uv.x)+1.0) * pi * u) / 16.0);
                 sums += (cos_x * Cu) * quantized_pixel;
         }
 
         vec3 fi = 0.5 * sums;
-        fi.x += 0.5;
+        // fi.x += 0.5;
         gl_FragColor = vec4(fi, 1.0);
 }

@@ -34,7 +34,7 @@ void main()
         float Cy = (local_uv.y == 0.0) ? 0.7071 : 1.0;
         vec3 DCT = 0.5 * Cy * sums;
 
-        float q_value = (20.0 * get_quant(int(local_uv.x), int(local_uv.y))) / 255.0;
+        float q_value = (10.0 * get_quant(int(local_uv.x), int(local_uv.y))) / 255.0;
         vec3 quantized_channels = vec3(round(DCT.x / q_value), round(DCT.y / q_value), round(DCT.z / q_value));
 
         gl_FragColor = vec4(quantized_channels, 1.0);

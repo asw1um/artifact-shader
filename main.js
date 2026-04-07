@@ -21,7 +21,7 @@ const idct_fshader = await file_loader.loadAsync("./idct_frag.glsl");
 const hfdct_fshader = await file_loader.loadAsync("./shaders/hfdct_frag.glsl");
 const vfdct_fshader = await file_loader.loadAsync("./shaders/vfdct_frag.glsl");
 const hidct_fshader = await file_loader.loadAsync("./shaders/hidct_frag.glsl");
-const vidct_fshader = await file_loader.loadAsync("./shaders/vfdct_frag.glsl");
+const vidct_fshader = await file_loader.loadAsync("./shaders/vidct_frag.glsl");
 
 const hfdct_shader = {
   uniforms: {
@@ -134,7 +134,7 @@ const render_target_parameters = {
   minFilter: THREE.NearestFilter,
   magFilter: THREE.NearestFilter,
   format: THREE.RGBAFormat,
-  type: THREE.HalfFloatType,
+  type: THREE.FloatType,
 };
 let custom_render_target = new THREE.WebGLRenderTarget(
   window.innerWidth,
@@ -145,8 +145,8 @@ const composer = new EffectComposer(renderer, custom_render_target);
 composer.addPass(new RenderPass(scene, camera));
 composer.addPass(hfdct_pass);
 composer.addPass(vfdct_pass);
-// composer.addPass(hidct_pass);
-// composer.addPass(vidct_pass);
+composer.addPass(hidct_pass);
+composer.addPass(vidct_pass);
 //
 // composer.addPass(idct_pass);
 

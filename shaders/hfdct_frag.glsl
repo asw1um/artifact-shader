@@ -21,7 +21,6 @@ void main()
         vec2 pixel_coord = floor(gl_FragCoord.xy);
         vec2 block_base_pixel = floor(pixel_coord / 8.0) * 8.0;
         vec2 local_uv = pixel_coord - block_base_pixel;
-
         vec3 sums = vec3(0.0);
         vec3 YCbCr = vec3(0.0);
         for (float x = 0.0; x < 8.0; ++x)
@@ -29,17 +28,14 @@ void main()
                 float target_pixel = block_base_pixel.x + x;
                 vec2 target_uv = vec2((target_pixel + 0.5) / u_resolution.x, (block_base_pixel.y + local_uv.y + 0.5) / u_resolution.y);
                 vec4 pixel_colour = texture(tDiffuse, target_uv);
-
-                YCbCr = rgb2YCbCr(pixel_colour.rgb);
-                YCbCr.x + 0.5;
-                //YCbCr.x = dot(pixel_colour.rgb, luma_weights) - 0.5;
-                //YCbCr.y = dot(pixel_colour.rgb, Cb_weights);
-                //YCbCr.z = dot(pixel_colour.rgb, Cr_weights);
-
+                YCbCr.x = dot(pixel_colour.rgb, luma_weights);
+                YCbCr.y = dot(pixel_colour.rgb, Cb_weights);
+                YCbCr.z = dot(pixel_colour.rgb, Cr_weights);
+                YCbCr.x -= 0.5;
                 float cos_x = cos((((2.0*x)+1.0) * pi * local_uv.x) / 16.0);
                 sums += (YCbCr * cos_x);
         }
         float Cx = (local_uv.x == 0.0) ? 0.7071 : 1.0;
-        vec3 DCT = (sums *= (0.50 * Cx));
+        vec3 DCT = sums * (0.50 * Cx);
         gl_FragColor = vec4(DCT, 1.0);
 }
