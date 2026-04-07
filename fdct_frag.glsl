@@ -43,10 +43,10 @@ void main()
         vec2 C = vec2( ((local_uv.x == 0.0) ? 0.7071 : 1.0) , ((local_uv.y == 0.0) ? 0.7071 : 1.0) );
         vec3 DCT = (sums *= (0.25 * C.x * C.y));
 
-        // Qunatize
+        // Quantize
         float q_value = ( 20.0 * get_quant(int(local_uv.x), int(local_uv.y))) / 255.0;
 
-        vec3 quantized_channels = vec3(round(DCT.x / q_value) , round(DCT.y / q_value), round(DCT.z / q_value)); 
+        vec3 quantized_channels = vec3(round(DCT.x / q_value) , round(DCT.y / q_value), round(DCT.z / q_value));
 
         gl_FragColor = vec4(quantized_channels, 1.0);
 }

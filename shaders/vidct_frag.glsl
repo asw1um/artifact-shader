@@ -28,25 +28,8 @@ void main()
         vec3 sums = vec3(0.0);
         for (float v = 0.0; v < 8.0; ++u)
         {
-                // for (float v = 0.0; v < 8.0; ++v)
-                // {
-                //         vec2 target_pixel = block_base_pixel + vec2(u, v);
-                //         vec2 target_uv = (target_pixel + 0.5) / u_resolution;
-                //         vec4 pixel_colour = texture(tDiffuse, target_uv);
-                //
-                //         vec3 quantized_pixel = vec3(texture(tDiffuse, target_uv).xyz);
-                //         float q_value = ( 20.0 * get_quant(int(u), int(v))) / 255.0;
-                //
-                //         quantized_pixel *= q_value;
-                //
-                //         vec2 C = vec2( ((u == 0.0) ? 0.7071 : 1.0), ((v == 0.0) ? 0.7071 : 1.0));
-                //         float cos_x = cos((((2.0*local_uv.x)+1.0) * pi * u) / 16.0);
-                //         float cos_y = cos((((2.0*local_uv.y)+1.0) * pi * v) / 16.0);
-                //
-                //         sums += (cos_x * cos_y * C.x * C.y) * quantized_pixel;
-                // }
-                vec2 target_pixel = block_base_pixel + vec2(pixel_coord.x, v);
-                vec2 target_uv = (target_pixel + 0.5) / u_resolution;
+                float target_pixel = block_base_pixel.y + v;
+                vec2 target_uv = vec2((block_base_pixel.x + local_uv.x + 0.5) / u_resolution.x, (target_pixel + 0.5) / u_resolution.y);
                 vec4 pixel_colour = texture(tDiffuse, target_uv);
 
                 float Cy = (v == 0.0) ? 0.7071 : 1.0;

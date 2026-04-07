@@ -28,25 +28,8 @@ void main()
         vec3 sums = vec3(0.0);
         for (float u = 0.0; u < 8.0; ++u)
         {
-                // for (float v = 0.0; v < 8.0; ++v)
-                // {
-                //         vec2 target_pixel = block_base_pixel + vec2(u, v);
-                //         vec2 target_uv = (target_pixel + 0.5) / u_resolution;
-                //         vec4 pixel_colour = texture(tDiffuse, target_uv);
-                //
-                //         vec3 quantized_pixel = vec3(texture(tDiffuse, target_uv).xyz);
-                //         float q_value = ( 20.0 * get_quant(int(u), int(v))) / 255.0;
-                //
-                //         quantized_pixel *= q_value;
-                //
-                //         vec2 C = vec2( ((u == 0.0) ? 0.7071 : 1.0), ((v == 0.0) ? 0.7071 : 1.0));
-                //         float cos_x = cos((((2.0*local_uv.x)+1.0) * pi * u) / 16.0);
-                //         float cos_y = cos((((2.0*local_uv.y)+1.0) * pi * v) / 16.0);
-                //
-                //         sums += (cos_x * cos_y * C.x * C.y) * quantized_pixel;
-                // }
-                vec2 target_pixel = block_base_pixel + vec2(u,pixel_coord.y);
-                vec2 target_uv = (target_pixel + 0.5) / u_resolution;
+                float target_pixel = block_base_pixel.x + u;
+                vec2 target_uv = vec2(target_pixel / u_resolution.x, (block_base_pixel.y + local_uv.y + 0.5) / u_resolution.y);
 
                 vec4 pixel_colour = texture(tDiffuse, target_uv);
                 vec3 quantized_pixel = pixel_colour.xyz;
@@ -55,11 +38,10 @@ void main()
                 quantized_pixel += q_value;
                 float Cu = (u == 0.0) ? 0.7071 : 1.0;
                 float cos_x = cos((((2.0*local_uv.x)+1.0) * pi * u) / 16.0);
-                sums += (cos_x * Cu) * quantized_pixel; 
+                sums += (cos_x * Cu) * quantized_pixel;
         }
 
         vec3 fi = 0.5 * sums;
         fi.x += 0.5;
-        // vec3 rgb_channels = ycbcr_to_rgb * fi;
         gl_FragColor = vec4(fi, 1.0);
 }
