@@ -17,7 +17,13 @@ const vert_shader = await file_loader.loadAsync( './vert.glsl' );
 const fdct_fshader = await file_loader.loadAsync( './fdct_frag.glsl' );
 const idct_fshader = await file_loader.loadAsync( './idct_frag.glsl' );
 
-const fdct_shader = 
+// Separated Shaders
+const hfdct_fshader = await file_loader.loadAsync( './shaders/hfdct_frag.glsl' );
+const vfdct_fshader = await file_loader.loadAsync( './shaders/vfdct_frag.glsl' );
+const hidct_fshader = await file_loader.loadAsync( './shaders/hidct_frag.glsl' );
+const vidct_fshader = await file_loader.loadAsync( './shaders/vfdct_frag.glsl' );
+
+const hfdct_shader = 
         {
                 uniforms: 
                 {
@@ -25,10 +31,10 @@ const fdct_shader =
                         u_resolution : {value : new THREE.Vector2(window.innerWidth * Math.min(window.devicePixelRatio, 2), window.innerHeight * Math.min(window.devicePixelRatio, 2))}
                 },
                 vertexShader: vert_shader,
-                fragmentShader: fdct_fshader,
+                fragmentShader: hfdct_fshader,
         };
 
-const idct_shader = 
+const vfdct_shader = 
         {
                 uniforms: 
                 {
@@ -36,11 +42,35 @@ const idct_shader =
                         u_resolution : {value : new THREE.Vector2(window.innerWidth * Math.min(window.devicePixelRatio, 2), window.innerHeight * Math.min(window.devicePixelRatio, 2))}
                 },
                 vertexShader: vert_shader,
-                fragmentShader: idct_fshader,
+                fragmentShader: vfdct_fshader,
         };
 
-const fdct_pass = new ShaderPass(fdct_shader);
-const idct_pass = new ShaderPass(idct_shader);
+const hidct_shader = 
+        {
+                uniforms: 
+                {
+                        tDiffuse: { value: null },
+                        u_resolution : {value : new THREE.Vector2(window.innerWidth * Math.min(window.devicePixelRatio, 2), window.innerHeight * Math.min(window.devicePixelRatio, 2))}
+                },
+                vertexShader: vert_shader,
+                fragmentShader: hidct_fshader,
+        };
+
+const vidct_shader = 
+        {
+                uniforms: 
+                {
+                        tDiffuse: { value: null },
+                        u_resolution : {value : new THREE.Vector2(window.innerWidth * Math.min(window.devicePixelRatio, 2), window.innerHeight * Math.min(window.devicePixelRatio, 2))}
+                },
+                vertexShader: vert_shader,
+                fragmentShader: vidct_fshader,
+        };
+
+const hfdct_pass = new ShaderPass(hfdct_shader);
+const vfdct_pass = new ShaderPass(vfdct_shader);
+const hidct_pass = new ShaderPass(hidct_shader);
+const vidct_pass = new ShaderPass(vidct_shader);
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl');
@@ -96,8 +126,11 @@ let custom_render_target = new THREE.WebGLRenderTarget(
 );
 const composer = new EffectComposer(renderer, custom_render_target);
 composer.addPass(new RenderPass(scene, camera));
-composer.addPass(fdct_pass);
-composer.addPass(idct_pass);
+composer.addPass(hfdct_pass);
+composer.addPass(vfdct_pass);
+composer.addPass(hidct_pass);
+composer.addPass(vidct_pass);
+// composer.addPass(idct_pass);
 
 /**
  * Lights
@@ -146,8 +179,8 @@ window.addEventListener('resize', () =>
                 custom_render_target.setSize(window.innerWidth * Math.min(window.devicePixelRatio, 2), window.innerHeight * Math.min(window.devicePixelRatio, 2));
 
                 // Update u_res
-                fdct_pass.uniforms.u_resolution.value.set(window.innerWidth * Math.min(window.devicePixelRatio, 2), window.innerHeight * Math.min(window.devicePixelRatio, 2));
-                idct_pass.uniforms.u_resolution.value.set(window.innerWidth * Math.min(window.devicePixelRatio, 2), window.innerHeight * Math.min(window.devicePixelRatio, 2));
+                // fdct_pass.uniforms.u_resolution.value.set(window.innerWidth * Math.min(window.devicePixelRatio, 2), window.innerHeight * Math.min(window.devicePixelRatio, 2));
+                // idct_pass.uniforms.u_resolution.value.set(window.innerWidth * Math.min(window.devicePixelRatio, 2), window.innerHeight * Math.min(window.devicePixelRatio, 2));
         });
 
 // Animate

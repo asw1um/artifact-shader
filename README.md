@@ -10,3 +10,4 @@
 -   [x] Investigate fastest solution for storing quantization matrix
 -   [ ] Separate DCT and IDCT into horizontal and vertical components to cut computation time
 -   [ ] Consider using Taylor Series approximations for sin and cos to maybe speed up computation
+-   [ ] Fix Improper Rendering on MacOS perhaps due to pixelRatio errors in main.js
