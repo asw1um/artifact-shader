@@ -5,11 +5,6 @@ varying vec2 vUv;
 
 // Constants
 const float pi = 3.14159265359;
-const mat3 ycbcr_to_rgb = mat3(
-                1.0, 1.0, 1.0,              // Y multiplier
-                0.0, -0.1873, 1.8556,       // Cb multiplier
-                1.5748, -0.4681, 0.0        // Cr multiplier
-                );
 const vec3 luma_weights = vec3(0.2126, 0.7152, 0.0722);
 const vec3 Cb_weights   = vec3(-0.1146, -0.3854, 0.5000);
 const vec3 Cr_weights   = vec3(0.5000, -0.4542, -0.0458);
@@ -49,7 +44,6 @@ void main()
         vec3 DCT = (sums *= (0.25 * C.x * C.y));
 
         // Qunatize
-        // int index = (int(local_uv.y) * 8) + int(local_uv.x);
         float q_value = ( 20.0 * get_quant(int(local_uv.x), int(local_uv.y))) / 255.0;
 
         vec3 quantized_channels = vec3(round(DCT.x / q_value) , round(DCT.y / q_value), round(DCT.z / q_value)); 
