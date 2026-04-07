@@ -39,8 +39,8 @@ void main()
                 //         sums += YCbCr * (cos_x * cos_y);
                 // }
                 float target_pixel = block_base_pixel.x + x; 
-                float target_uv = (target_pixel + 0.5) / u_resolution.x;
-                vec4 pixel_colour = texture(tDiffuse, vec2(target_uv, pixel_coord.y));
+                vec2 target_uv = vec2((target_pixel + 0.5) / u_resolution.x, block_base_pixel.y + local_uv.y);
+                vec4 pixel_colour = texture(tDiffuse, target_uv);
 
                 YCbCr.x = dot(pixel_colour.rgb, luma_weights) - 0.5;
                 YCbCr.y = dot(pixel_colour.rgb, Cb_weights);

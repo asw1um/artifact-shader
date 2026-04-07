@@ -128,8 +128,9 @@ const composer = new EffectComposer(renderer, custom_render_target);
 composer.addPass(new RenderPass(scene, camera));
 composer.addPass(hfdct_pass);
 composer.addPass(vfdct_pass);
-composer.addPass(hidct_pass);
-composer.addPass(vidct_pass);
+// composer.addPass(hidct_pass);
+// composer.addPass(vidct_pass);
+// 
 // composer.addPass(idct_pass);
 
 /**

@@ -20,7 +20,6 @@ void main()
         vec2 local_uv = pixel_coord - block_base_pixel;
 
         vec3 sums = vec3(0.0);
-        vec3 YCbCr = vec3(0.0);
         for (float y = 0.0; y < 8.0; ++y)
         {
                 // for (float y = 0.0; y < 8.0; ++y)
@@ -39,15 +38,11 @@ void main()
                 //         sums += YCbCr * (cos_x * cos_y);
                 // }
                 float target_pixel = block_base_pixel.y + y; 
-                float target_uv = (target_pixel + 0.5) / u_resolution.y;
-                vec4 pixel_colour = texture(tDiffuse, vec2(target_uv, pixel_coord.y));
+                vec2 target_uv = vec2(block_base_pixel.x + local_uv.x, (target_pixel + 0.5) / u_resolution.y);
+                vec4 pixel_colour = texture(tDiffuse, target_uv);
 
-                // YCbCr.x = dot(pixel_colour.rgb, luma_weights) - 0.5;
-                // YCbCr.y = dot(pixel_colour.rgb, Cb_weights);
-                // YCbCr.z = dot(pixel_colour.rgb, Cr_weights);
-                vec3 temp = pixel_colour.xyz;
                 float cos_y = cos((((2.0*y)+1.0) * pi * local_uv.y) / 16.0);
-                sums += temp * cos_y;
+                sums += (pixel_colour.xyz) * cos_y;
 
         }
         // vec2 C = vec2( ((local_uv.x == 0.0) ? 0.7071 : 1.0) , ((local_uv.y == 0.0) ? 0.7071 : 1.0) );
